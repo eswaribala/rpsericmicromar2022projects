@@ -1,22 +1,18 @@
 package com.eric.jwtsecurity.vo;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 //DTO
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class JwtRequest {
 
 	private String userName;
 	private String userPwd;
-	public String getUserName() {
-		return userName;
-	}
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
-	public String getUserPwd() {
-		return userPwd;
-	}
-	public void setUserpwd(String userpwd) {
-		this.userPwd = userpwd;
-	}
+	
 
 	
 }
