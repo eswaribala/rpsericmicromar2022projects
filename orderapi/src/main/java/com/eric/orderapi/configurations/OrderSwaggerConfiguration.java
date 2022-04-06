@@ -32,11 +32,11 @@ public class OrderSwaggerConfiguration {
     @Bean
     public Docket api10Docket() {
         return new Docket(DocumentationType.SWAGGER_2)
-        		.groupName("catalogs-api-1.0")
+        		.groupName("orders-api-1.0")
                 .select()
                 .apis(RequestHandlerSelectors
-                        .basePackage("com.eric.inventoryservice"))
-                .paths(PathSelectors.regex("/catalogs/v1.0.*"))
+                        .basePackage("com.eric.orderapi"))
+                .paths(PathSelectors.regex("/orders/v1.0.*"))
                 .build()
                 .apiInfo(getApiInfo())
                 .forCodeGeneration(true)
@@ -54,7 +54,7 @@ public class OrderSwaggerConfiguration {
     
     private ApiInfo getApiInfo() {
         return new ApiInfo(
-                "Inventory API",
+                "Order API",
                 "App to demonstrate API Documentation",
                 "0.0.1-SNAPSHOT",
                 "Terms of Service",
