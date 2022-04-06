@@ -1,4 +1,4 @@
-package com.eric.orderapi.configurations;
+package com.eric.paymentapi.configurations;
 
 import java.util.Collections;
 import java.util.Date;
@@ -25,18 +25,18 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2WebMvc;
 @Configuration
 @EnableSwagger2WebMvc
 @Import(springfox.bean.validators.configuration.BeanValidatorPluginsConfiguration.class)
-public class OrderSwaggerConfiguration {
+public class PaymentSwaggerConfiguration {
 	 public static final String AUTHORIZATION_HEADER = "Authorization";
 	 public static final String DEFAULT_INCLUDE_PATTERN = "/api/.*";
 	 
     @Bean
     public Docket api10Docket() {
         return new Docket(DocumentationType.SWAGGER_2)
-        		.groupName("catalogs-api-1.0")
+        		.groupName("payment-api-1.0")
                 .select()
                 .apis(RequestHandlerSelectors
-                        .basePackage("com.eric.inventoryservice"))
-                .paths(PathSelectors.regex("/catalogs/v1.0.*"))
+                        .basePackage("com.eric.paymentapi"))
+                .paths(PathSelectors.regex("/payments/v1.0.*"))
                 .build()
                 .apiInfo(getApiInfo())
                 .forCodeGeneration(true)
