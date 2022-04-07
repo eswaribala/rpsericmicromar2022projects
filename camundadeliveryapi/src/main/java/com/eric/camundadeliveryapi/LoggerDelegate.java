@@ -1,5 +1,6 @@
 package com.eric.camundadeliveryapi;
 
+import java.util.Random;
 import java.util.logging.Logger;
 
 import org.camunda.bpm.engine.delegate.DelegateExecution;
@@ -27,6 +28,8 @@ public class LoggerDelegate implements JavaDelegate {
             + ", executionId=" + execution.getId()
             + ", variables=" + execution.getVariables()
             + " \n\n");
+    
+    execution.setVariable("customerId", new Random().nextInt(100000));
     
   }
 
