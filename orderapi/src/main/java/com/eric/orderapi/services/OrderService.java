@@ -12,20 +12,18 @@ import com.eric.orderapi.models.Order;
 
 @Service
 public class OrderService {
-
-	@Autowired
+    @Autowired
 	private OrderChannel orderChannel;
-	
-	public boolean publishOrder(Order order) {
-		
-		MessageChannel messageChannel=orderChannel.outChannel();
-		return messageChannel.send(MessageBuilder
+    
+    public boolean publishData(Order order) {
+    	MessageChannel messageChannel=this.orderChannel.outChannel();
+    	//publishing
+    	return messageChannel.send(MessageBuilder
                 .withPayload(order)
-                .setHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_JSON)
+                .setHeader(MessageHeaders.CONTENT_TYPE, 
+                		MimeTypeUtils.APPLICATION_JSON)
                 .build());
 
-		
-	}
-	
-	
+
+    }
 }

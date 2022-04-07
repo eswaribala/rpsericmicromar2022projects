@@ -16,13 +16,15 @@ import com.eric.orderapi.services.OrderService;
 public class OrderController {
     @Autowired
 	private OrderService orderService;
-	
+    
     @PostMapping({"/v1.0"})
     public ResponseEntity<String> publishOrderData(@RequestBody Order order){
-    	if(orderService.publishOrder(order))
-    		return ResponseEntity.status(HttpStatus.OK).body("Order Published....");
+    	if(this.orderService.publishData(order)) 
+    		return ResponseEntity.status(HttpStatus.OK).body("Order Published.....");
     	else
-    		return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Order Not Published....");
-    	
-    }
+    	    return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
+    	        				.body("Order Not Published.....");
+    	}
+    
+	
 }
