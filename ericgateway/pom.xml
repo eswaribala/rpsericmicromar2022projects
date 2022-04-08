@@ -67,6 +67,20 @@
 		    <version>1.18.22</version>
 		    <scope>provided</scope>
 		</dependency>
+		<!-- Jaegar -->
+		
+		<dependency>
+		    <groupId>io.jaegertracing</groupId>
+		    <artifactId>jaeger-core</artifactId>
+		   <version>1.8.0</version>
+		</dependency>
+				<!-- https://mvnrepository.com/artifact/io.jaegertracing/jaeger-client -->
+		<dependency>
+		    <groupId>io.jaegertracing</groupId>
+		    <artifactId>jaeger-client</artifactId>
+		    <version>1.8.0</version>
+		</dependency>
+		
 	</dependencies>
 <dependencyManagement>
 		<dependencies>

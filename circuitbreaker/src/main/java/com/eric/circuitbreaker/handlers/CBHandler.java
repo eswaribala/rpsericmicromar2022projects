@@ -11,6 +11,9 @@ import com.eric.circuitbreaker.models.JWTRequest;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 
+import io.jaegertracing.internal.JaegerTracer;
+import io.opentracing.Span;
+
 
 @Service
 public class CBHandler {
@@ -21,6 +24,8 @@ public class CBHandler {
     private String serviceUrl;
     @Value("${fallBackUrl}")
     private String fallBackUrl;
+    @Autowired
+    private JaegerTracer tracer;
  
        /**
     @HystrixCommand(commandKey = "GetCustomerCommand", groupKey = "CustomerGroupKey", threadPoolKey = "Test",
@@ -49,23 +54,32 @@ public class CBHandler {
                     @HystrixProperty(name = "queueSizeRejectionThreshold", value = "15"),
                     @HystrixProperty(name = "metrics.rollingStats.timeInMilliseconds", value = "1440")
             })
-	public ResponseEntity<String> requestHandler(JWTRequest  jwtRequest)
+	public ResponseEntity<String> requestHandler(JWTRequest  jwtRequest,Span rootSpan)
 	{
-    	
+    	Span span = tracer.buildSpan(" gateway call...")
+				.asChildOf(rootSpan).start();
+		
     	//return restTemplate.exchange(serviceUrl+"?userName="+jwtRequest.getUserName()
 		//+"&userPwd="+jwtRequest.getUserPwd(),HttpMethod.GET,null,String.class);
 		
-		return restTemplate.exchange(serviceUrl+"?userName="+jwtRequest.getUserName()
+	ResponseEntity<String> response= restTemplate.exchange(serviceUrl+"?userName="+jwtRequest.getUserName()
 		+"&userPwd="+jwtRequest.getPassword(),HttpMethod.GET,null,String.class);
+	  span.log("API Gateway Communication Established....");
 		
-		
+		span.finish();
+		return response;
 	}
 	
-	public ResponseEntity<String> fallbackRequestHandler(JWTRequest  jwtRequest)
+	public ResponseEntity<String> fallbackRequestHandler(JWTRequest  jwtRequest,Span rootSpan)
 	{
 		
-		return restTemplate.exchange(fallBackUrl,HttpMethod.GET,null,String.class);
+		Span span = tracer.buildSpan(" API call...")
+				.asChildOf(rootSpan).start();
+		ResponseEntity<String> response= restTemplate.exchange(fallBackUrl,HttpMethod.GET,null,String.class);
+          span.log("API Communication Established....");
 		
+		span.finish();
+		return response;
 		
 	}
 

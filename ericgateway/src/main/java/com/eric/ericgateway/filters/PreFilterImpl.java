@@ -9,6 +9,8 @@ import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import com.netflix.zuul.exception.ZuulException;
 
+import io.jaegertracing.internal.JaegerTracer;
+import io.opentracing.Span;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -52,6 +54,10 @@ public class PreFilterImpl extends ZuulFilter {
 	@Value("${api}")
 	private String api;
 	
+	@Autowired
+	private JaegerTracer tracer;
+	
+	
     @Override
     public String filterType() {
         return "pre";
@@ -70,6 +76,9 @@ public class PreFilterImpl extends ZuulFilter {
     @Override
     public Object run() throws ZuulException {
     	
+    	Span span = tracer.buildSpan("Prefilter ...").start();
+    	 
+
     	RequestContext ctx = RequestContext.getCurrentContext();
         HttpServletRequest servletRequest = ctx.getRequest();
         log.info("Entering pre filter........");
@@ -100,7 +109,7 @@ public class PreFilterImpl extends ZuulFilter {
  		      postForEntity(authUrl+"signin",request, String.class);
  	    log.info(authResponse.getBody().toString());
  	     
- 	     token = parseString(authResponse.getBody().toString());  
+ 	     token = parseString(authResponse.getBody().toString(),span);  
  	       log.info("Token:"+token); 	       
  	       
  			//phase 2
@@ -117,7 +126,8 @@ public class PreFilterImpl extends ZuulFilter {
 		  String.class); 
 		 System.out.println(responseEntityStr.getBody());
 		 log.info("token : {} Verification Passed", token);
-         
+		 span.setTag("http.status_code", 201);
+
          //Routing requests
          ctx.setSendZuulResponse(true);
     	}
@@ -127,6 +137,7 @@ public class PreFilterImpl extends ZuulFilter {
             //Do not route requests
             ctx.setSendZuulResponse(false);
             responseError(ctx, -403, "invalid token");
+            span.setTag("http.status_code", -403);
     	}
     	
              
@@ -155,16 +166,20 @@ public class PreFilterImpl extends ZuulFilter {
             return null;
         }
     }
-    private String parseString(String response)
+    private String parseString(String response,Span rootSpan)
 		{
 			JSONParser parser = new JSONParser(); 
 			String token="";
+			Span span=null;
 		  	try {
 		  		 
 				// Put above JSON content to crunchify.txt file and change path location
 				Object obj = parser.parse(response);
 				JSONObject jsonObject = (JSONObject) obj;
-	 
+				span=tracer.buildSpan("service  calling gateway...")
+						.asChildOf(rootSpan).start();
+				
+
 				// JsonFlattener: A Java utility used to FLATTEN nested JSON objects
 				String flattenedJson = JsonFlattener.flatten(jsonObject.toString());
 				//log("\n=====Simple Flatten===== \n" + flattenedJson);
@@ -181,6 +196,8 @@ public class PreFilterImpl extends ZuulFilter {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		  	
+		  	span.finish();
 		 return token;
 
 		}
