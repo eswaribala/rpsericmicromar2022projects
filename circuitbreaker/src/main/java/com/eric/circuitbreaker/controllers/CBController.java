@@ -22,7 +22,7 @@ public class CBController {
     
 	@PostMapping("/")
 	public ResponseEntity<?> sendRequest(@RequestBody JWTRequest jwtRequest) {
-		Span span = tracer.buildSpan("Prefilter ...").start();
+		Span span = tracer.buildSpan("cb controller ...").start();
 		
 		 ResponseEntity<String> responseEntity= this.cbHandler.requestHandler(jwtRequest,span);
 		 span.finish();
